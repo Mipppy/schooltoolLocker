@@ -1,0 +1,124 @@
+<html><head>
+    <title>Schooltool Locker</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="A site to lock people out of Queensbury's Schooltool">
+    <meta name="keywords" content="troll, locker, schooltool, Queensbury, QUFSD, QHS, QMS">
+    <meta name="author" content="A Queensbury student">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <input id="input" placeholder="lastfirst05">
+    <button onclick="lock()">Lock this account</button>
+    <br><br>
+    <b>Accounts condemned:</b><table id="aTable">
+        <thead>
+            <tr>
+                                
+            </tr>
+        </thead>
+    </table>
+
+    <script>
+    function areLastTwoCharsNumeric(inputString) {
+    return /\d{2}$/.test(inputString.slice(-2));
+}
+function areAllButLastTwoCharsLowercase(inputString) {
+    var d = inputString.slice(0,inputString.length-2)
+    if (d == d.toLowerCase()) {
+        return true
+    }
+    return false
+}
+
+        function lock() {
+            var data = document.getElementById("input").value;
+            if (data.includes("portuesetim09")) {
+                alert("nice try");
+                document.getElementById("input").value = "";
+                return false;
+            }
+            if (!areLastTwoCharsNumeric(data)) {
+                alert("Not valid")
+                document.getElementById("input").value = "";
+                return false
+            }
+            if (!areAllButLastTwoCharsLowercase(data))  {
+                               alert("Not valid")
+                document.getElementById("input").value = "";
+                return false
+            }
+            fetch(`/lock?user=${data}`, {
+                method: "POST"
+            }).then(response=> {
+                document.getElementById("input").value = "";
+                location.reload()
+            });
+        }
+        function unlock(btn, thing) {
+            btn.remove()
+            fetch(`/unlock?user=${thing}`, {
+                method: "POST"
+            }).then(response=> {
+                location.reload()
+            });
+
+        }
+var f = {{ data | tojson | safe }};
+jsonData = JSON.parse(f)
+// Create the table element
+var table = document.getElementById("aTable");
+
+         // Get the keys (column names) of the first object in the JSON data
+         let cols = Object.keys(jsonData);
+        cols.forEach((something) => {
+            let tr = document.createElement("tr");
+             let td = document.createElement("td");
+             td.innerText = something
+                              var bt = document.createElement("button")
+                bt.innerText = "Disable"
+                bt.onclick = function() {
+    unlock(bt, something);
+};
+                tr.appendChild(bt)
+             tr.appendChild(td);
+             table.appendChild(tr)
+        })
+         // Create the header element
+
+         // Loop through the JSON data and create table rows
+//          jsonData.forEach((item) => {
+//             let tr = document.createElement("tr");
+
+//             // Get the values of the current object in the JSON data
+//             item.forEach((something) => {
+//                 console.log(something)
+//             })
+//             let vals = Object.values(item);
+//             console.log(item)
+//             // Loop through the values and create table cells
+//             let td = document.createElement("td");
+//               td.innerText = Object.keys(item) + ": " + vals; // Set the value as the text of the table cell
+//               tr.appendChild(td); // Append the table cell to the table row
+//             table.appendChild(tr); // Append the table row to the table
+//             if (vals.includes("enabled")) {
+//                 var bt = document.createElement("button")
+//                 bt.innerText = "Disable"
+//                 bt.onclick = function() {
+//     unlock(bt, Object.keys(item));
+// };
+//                 tr.appendChild(bt)
+//             }
+//          });
+
+
+    </script>
+    <br>
+    <br>
+    <h3>
+        How it works
+    </h3>
+    <hr>
+    When you enter a student username, it sends a <b>post</b> request to the server.  This request then stores that username in a JSON file.  Unlock does this same thing, but removes the username from the JSON file.  A remove computer then can send a <b>post</b> request to the server at <i>/data</i>, which gives it the JSON file of all users to block.  That remote computer has a pool of 10 firefox selenium drivers that it shares between all usernames to block.  It then spams a random password into schooltool using that person username.  This basically locks the people out of their account.
+
+
+</body></html>
